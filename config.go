@@ -6,6 +6,7 @@ import (
 	"io"
 	"net"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -14,10 +15,26 @@ type device struct {
 }
 
 type config struct {
-	bind        string
-	port        int
-	httpTimeout time.Duration
-	logLevel    string
+	bind               string
+	port               int
+	httpTimeout        time.Duration
+	logLevel           string
+	webConfigFile      string
+	webListenAddresses []string
+}
+
+type stringSliceFlag []string
+
+func (values *stringSliceFlag) String() string {
+	return strings.Join(*values, ",")
+}
+
+func (values *stringSliceFlag) Set(value string) error {
+	if value == "" {
+		return fmt.Errorf("listen address cannot be empty")
+	}
+	*values = append(*values, value)
+	return nil
 }
 
 func parseConfig(args []string, getenv func(string) string, output io.Writer) (config, error) {
@@ -34,6 +51,9 @@ func parseConfig(args []string, getenv func(string) string, output io.Writer) (c
 	flags.StringVar(&port, "port", port, "Metrics port (APOLLO_EXPORTER_PORT)")
 	flags.StringVar(&port, "p", port, "Metrics port (shorthand)")
 	flags.StringVar(&cfg.bind, "bind", value("APOLLO_EXPORTER_BIND", "0.0.0.0"), "Metrics bind address (APOLLO_EXPORTER_BIND)")
+	var listenAddresses stringSliceFlag
+	flags.Var(&listenAddresses, "web.listen-address", "Addresses on which to expose metrics; repeat this flag to listen on multiple addresses")
+	flags.StringVar(&cfg.webConfigFile, "web.config.file", value("APOLLO_WEB_CONFIG_FILE", ""), "Path to a YAML file enabling TLS or authentication")
 	timeout := flags.String("http-timeout", value("APOLLO_HTTP_TIMEOUT", "10"), "Device collection timeout per scrape in seconds (APOLLO_HTTP_TIMEOUT)")
 	flags.StringVar(&cfg.logLevel, "log-level", value("APOLLO_LOG_LEVEL", "info"), "Log level: trace, debug, info, warn, error (APOLLO_LOG_LEVEL)")
 	showVersion := flags.Bool("version", false, "Print version")
@@ -53,6 +73,11 @@ func parseConfig(args []string, getenv func(string) string, output io.Writer) (c
 		return cfg, fmt.Errorf("invalid port: %q", port)
 	}
 	cfg.port = int(parsedPort)
+	if len(listenAddresses) == 0 {
+		cfg.webListenAddresses = []string{cfg.address()}
+	} else {
+		cfg.webListenAddresses = listenAddresses
+	}
 	seconds, err := strconv.ParseInt(*timeout, 10, 64)
 	if err != nil || seconds <= 0 || seconds > int64((1<<63-1)/time.Second) {
 		return cfg, fmt.Errorf("HTTP timeout must be a positive number of seconds")

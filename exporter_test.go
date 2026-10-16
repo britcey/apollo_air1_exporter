@@ -28,21 +28,21 @@ func TestConfig(t *testing.T) {
 		"APOLLO_EXPORTER_PORT": "1234", "APOLLO_HTTP_TIMEOUT": "15",
 	}
 	getenv := func(key string) string { return env[key] }
-	cfg, err := parseConfig([]string{"--port", "9926", "--bind", "::1"}, getenv, io.Discard)
+	cfg, err := parseConfig([]string{"--port", "9926", "--bind", "::1", "--web.listen-address", "127.0.0.1:1234", "--web.listen-address=:4321", "--web.config.file", "web.yml"}, getenv, io.Discard)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.address() != "[::1]:9926" || cfg.httpTimeout != 15*time.Second {
+	if cfg.address() != "[::1]:9926" || cfg.httpTimeout != 15*time.Second || cfg.webConfigFile != "web.yml" || strings.Join(cfg.webListenAddresses, ",") != "127.0.0.1:1234,:4321" {
 		t.Fatalf("unexpected configuration: %+v", cfg)
 	}
 	defaults, err := parseConfig(nil, func(string) string { return "" }, io.Discard)
-	if err != nil || defaults.address() != "0.0.0.0:9926" || defaults.httpTimeout != 10*time.Second || defaults.logLevel != "info" {
+	if err != nil || defaults.address() != "0.0.0.0:9926" || defaults.httpTimeout != 10*time.Second || defaults.logLevel != "info" || strings.Join(defaults.webListenAddresses, ",") != "0.0.0.0:9926" {
 		t.Fatalf("invalid defaults: %+v, %v", defaults, err)
 	}
 	for _, args := range [][]string{
 		{"--hosts=http://apollo"}, {"--names=Room"}, {"--poll-interval=30"},
 		{"--http-timeout=0"}, {"--http-timeout=-1"}, {"--http-timeout=9223372036854775807"},
-		{"--port=65536"}, {"--log-level=nope"}, {"unexpected"},
+		{"--port=65536"}, {"--log-level=nope"}, {"--web.listen-address="}, {"unexpected"},
 	} {
 		if _, err := parseConfig(args, func(string) string { return "" }, io.Discard); err == nil {
 			t.Errorf("expected error for %v", args)

@@ -15,9 +15,10 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/exporter-toolkit/web"
 )
 
-var version = "0.2.0"
+var version = "0.3.0"
 
 type exporter struct {
 	httpTimeout time.Duration
@@ -101,7 +102,13 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	exporter := newExporter(cfg)
-	server := &http.Server{Addr: cfg.address(), Handler: exporter.handler(), ReadHeaderTimeout: 5 * time.Second}
+	server := &http.Server{Handler: exporter.handler(), ReadHeaderTimeout: 5 * time.Second}
+	systemdSocket := false
+	webFlags := &web.FlagConfig{
+		WebListenAddresses: &cfg.webListenAddresses,
+		WebSystemdSocket:   &systemdSocket,
+		WebConfigFile:      &cfg.webConfigFile,
+	}
 	shutdownDone := make(chan struct{})
 	go func() {
 		defer close(shutdownDone)
@@ -112,8 +119,8 @@ func run() error {
 			slog.Error("HTTP shutdown failed", "error", err)
 		}
 	}()
-	slog.Info("Starting Apollo Air-1 Prometheus Exporter", "version", version, "address", cfg.address())
-	err = server.ListenAndServe()
+	slog.Info("Starting Apollo Air-1 Prometheus Exporter", "version", version, "addresses", cfg.webListenAddresses)
+	err = web.ListenAndServe(server, webFlags, slog.Default())
 	stop()
 	<-shutdownDone
 	if errors.Is(err, http.ErrServerClosed) {

@@ -81,8 +81,13 @@ The exporter is configured via environment variables:
 - `APOLLO_LOG_LEVEL` (default: info) - Log level (trace, debug, info, warn, error)
 
 Equivalent command-line flags are `--port` (`-p`), `--bind`, `--http-timeout`,
-and `--log-level`. Flags override environment variables. Timeouts are positive integer
-seconds. Use `--help` for options and `--version` for the binary version.
+and `--log-level`. `--web.listen-address` can be repeated to listen on multiple
+addresses; when set, it overrides `--port` and `--bind`. `--web.config.file` points
+to an exporter-toolkit YAML file for TLS and/or basic authentication. It can also
+be set with `APOLLO_WEB_CONFIG_FILE`. See the
+[exporter-toolkit web configuration documentation](https://github.com/prometheus/exporter-toolkit/blob/master/docs/web-configuration.md).
+Timeouts are positive integer seconds. Use `--help` for options and `--version`
+for the binary version.
 
 Each request to `/probe` must supply one `target` query parameter containing
 an `http://` or `https://` device URL. The `device` label is the target hostname.
