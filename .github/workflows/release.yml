@@ -68,7 +68,7 @@ jobs:
           echo "date=$(date -u +%Y%m%d-%H:%M:%S)" >> "$GITHUB_OUTPUT"
       - name: Docker metadata
         id: metadata
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             britcey/apollo_air1_exporter
