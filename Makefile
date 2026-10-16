@@ -4,6 +4,8 @@ VERSION ?= $(shell sed -n '1p' VERSION)
 GOARCH ?= $(shell go env GOARCH)
 GO ?= go
 FIRST_GOPATH := $(firstword $(subst :, ,$(shell $(GO) env GOPATH)))
+PROMU_BUILD_GOOS := $(shell $(GO) env GOHOSTOS)
+PROMU_BUILD_GOARCH := $(shell $(GO) env GOHOSTARCH)
 PROMU ?= $(FIRST_GOPATH)/bin/promu
 PROMU_VERSION ?= 0.20.0
 GNU_COREUTILS_BIN := $(shell brew --prefix coreutils 2>/dev/null)/libexec/gnubin
@@ -28,7 +30,7 @@ tarball: build promu
 promu: $(PROMU)
 
 $(PROMU):
-	GOBIN="$(FIRST_GOPATH)/bin" $(GO) install github.com/prometheus/promu@v$(PROMU_VERSION)
+	GOOS="$(PROMU_BUILD_GOOS)" GOARCH="$(PROMU_BUILD_GOARCH)" GOBIN="$(FIRST_GOPATH)/bin" $(GO) install github.com/prometheus/promu@v$(PROMU_VERSION)
 
 # Run tests
 test:
