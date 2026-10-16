@@ -187,6 +187,17 @@ build directly from source.
 On macOS, install GNU coreutils (`brew install coreutils`) before running
 `make tarball`.
 
+## Releasing
+
+From a clean `main` branch, run `make release VERSION=v0.4.1` (replace the
+version as appropriate). Update `CHANGELOG.md` when prompted, then push the
+commit and tag using the commands printed by the script. Pushing a `v*` tag
+starts the release workflow, which creates the GitHub Release with promu-built
+archives and publishes multi-architecture images to Docker Hub and GHCR.
+
+Add `DOCKER_USERNAME` and `DOCKER_PASSWORD` as repository Actions secrets for
+Docker Hub publishing. GHCR publishing uses the workflow's `GITHUB_TOKEN`.
+
 ## Prometheus Configuration
 
 Add the following to your `prometheus.yml`:

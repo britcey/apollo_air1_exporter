@@ -2,15 +2,19 @@ FROM --platform=$BUILDPLATFORM golang:1.27-alpine AS build
 ARG TARGETOS
 ARG TARGETARCH
 ARG VERSION
+ARG REVISION=unknown
+ARG BRANCH=unknown
+ARG BUILD_USER=unknown@unknown
+ARG BUILD_DATE
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 COPY VERSION ./VERSION
 COPY *.go ./
 RUN VERSION="${VERSION:-$(cat VERSION)}" \
-    BUILD_DATE="$(date -u +%Y%m%d-%H:%M:%S)" && \
+    BUILD_DATE="${BUILD_DATE:-$(date -u +%Y%m%d-%H:%M:%S)}" && \
     CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath \
-    -ldflags "-s -w -X github.com/prometheus/common/version.Version=$VERSION -X github.com/prometheus/common/version.Revision=unknown -X github.com/prometheus/common/version.Branch=unknown -X github.com/prometheus/common/version.BuildUser=unknown@unknown -X github.com/prometheus/common/version.BuildDate=$BUILD_DATE" \
+    -ldflags "-s -w -X github.com/prometheus/common/version.Version=$VERSION -X github.com/prometheus/common/version.Revision=$REVISION -X github.com/prometheus/common/version.Branch=$BRANCH -X github.com/prometheus/common/version.BuildUser=$BUILD_USER -X github.com/prometheus/common/version.BuildDate=$BUILD_DATE" \
     -o /out/apollo_air1_exporter .
 
 FROM alpine:3.24 AS runtime

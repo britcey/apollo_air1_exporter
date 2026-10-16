@@ -50,17 +50,11 @@ git commit -m "chore: prepare release $TAG"
 # Create and push tag
 git tag -a "$TAG" -m "Release $TAG"
 
-echo "Building release tarball..."
-make tarball
-
 echo ""
 echo "Release $TAG prepared!"
 echo ""
-echo "To publish the release:"
+echo "Push the commit and tag to start the GitHub Actions release workflow:"
 echo "  git push origin main"
 echo "  git push origin $TAG"
 echo ""
-echo "This will trigger:"
-echo "- GitHub Release creation"
-echo "- Docker multi-arch builds"
-echo "- Binary artifacts upload"
+echo "The workflow creates the GitHub Release and multi-architecture images."
