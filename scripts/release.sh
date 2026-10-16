@@ -39,7 +39,8 @@ echo "Running checks..."
 make check
 
 # Update CHANGELOG
-echo "Please update CHANGELOG.md for version $VERSION"
+echo "Please update CHANGELOG.md with a heading in this format:"
+echo "## $VERSION / $(date -u +%F)"
 echo "Press Enter when done..."
 read
 
