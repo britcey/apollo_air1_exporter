@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -18,7 +17,7 @@ import (
 	"github.com/prometheus/exporter-toolkit/web"
 )
 
-var version = "0.3.0"
+var version = "0.4.0"
 
 type exporter struct {
 	httpTimeout time.Duration
@@ -83,7 +82,7 @@ func (exporter *exporter) handler() http.Handler {
 
 func run() error {
 	cfg, err := parseConfig(os.Args[1:], os.Getenv, os.Stdout)
-	if errors.Is(err, flag.ErrHelp) {
+	if errors.Is(err, errHelpRequested) {
 		return nil
 	}
 	if err != nil {

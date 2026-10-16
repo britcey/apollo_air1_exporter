@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -39,6 +38,10 @@ func TestConfig(t *testing.T) {
 	if err != nil || defaults.address() != "0.0.0.0:9926" || defaults.httpTimeout != 10*time.Second || defaults.logLevel != "info" || strings.Join(defaults.webListenAddresses, ",") != "0.0.0.0:9926" {
 		t.Fatalf("invalid defaults: %+v, %v", defaults, err)
 	}
+	legacy, err := parseConfig([]string{"-p", "2345", "--bind", "::1"}, getenv, io.Discard)
+	if err != nil || strings.Join(legacy.webListenAddresses, ",") != "[::1]:2345" {
+		t.Fatalf("legacy bind and port did not set the default listener: %+v, %v", legacy, err)
+	}
 	for _, args := range [][]string{
 		{"--hosts=http://apollo"}, {"--names=Room"}, {"--poll-interval=30"},
 		{"--http-timeout=0"}, {"--http-timeout=-1"}, {"--http-timeout=9223372036854775807"},
@@ -50,7 +53,7 @@ func TestConfig(t *testing.T) {
 	}
 	for _, args := range [][]string{{"--help"}, {"-h"}, {"--version"}, {"-V"}} {
 		var output bytes.Buffer
-		if _, err := parseConfig(args, getenv, &output); !errors.Is(err, flag.ErrHelp) || output.Len() == 0 {
+		if _, err := parseConfig(args, getenv, &output); !errors.Is(err, errHelpRequested) || output.Len() == 0 {
 			t.Errorf("%v: output=%q, error=%v", args, output.String(), err)
 		}
 	}
