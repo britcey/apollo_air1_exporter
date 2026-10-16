@@ -84,7 +84,7 @@ Equivalent command-line flags are `--port` (`-p`), `--bind`, `--http-timeout`,
 and `--log-level`. Flags override environment variables. Timeouts are positive integer
 seconds. Use `--help` for options and `--version` for the binary version.
 
-Each request to `/metrics` must supply one `target` query parameter containing
+Each request to `/probe` must supply one `target` query parameter containing
 an `http://` or `https://` device URL. The `device` label is the target hostname.
 Friendly labels can be configured in Prometheus. Targets may not contain
 credentials, query parameters, or fragments. Missing or invalid targets return HTTP 400.
@@ -117,7 +117,7 @@ Run with Docker:
 
 ```bash
 docker run -d \
-  --name apollo-air1-exporter \
+  --name apollo_air1_exporter \
   -p 9926:9926 \
   britcey/apollo_air1_exporter:latest
 ```
@@ -135,13 +135,13 @@ make build
 ### Running locally
 
 ```bash
-./dist/apollo-air1-exporter
+./dist/apollo_air1_exporter
 ```
 
 Query a device from another terminal:
 
 ```bash
-curl --get 'http://localhost:9926/metrics' \
+curl --get 'http://localhost:9926/probe' \
   --data-urlencode 'target=http://192.168.1.100'
 ```
 
@@ -150,7 +150,7 @@ curl --get 'http://localhost:9926/metrics' \
 ```yaml
 version: '3'
 services:
-  apollo-air1-exporter:
+  apollo_air1_exporter:
     build: .
     ports:
       - "9926:9926"
@@ -161,7 +161,8 @@ services:
 
 ## Endpoints
 
-- `/metrics?target=http://device` - Collect fresh metrics from one device
+- `/probe?target=http://device` - Collect fresh metrics from one device
+- `/metrics` - Exporter build, Go runtime, and process metrics
 - `/health` - Health check endpoint
 - `/` - Welcome page
 
@@ -173,7 +174,7 @@ make build
 
 `make check` runs formatting checks, `go vet`, and race-enabled tests.
 `make build-linux GOARCH=amd64` (or `arm64`) builds a static Linux binary without
-a cross-compiler. `docker build -t apollo-air1-exporter .` and Docker Compose build
+a cross-compiler. `docker build -t apollo_air1_exporter .` and Docker Compose build
 from source; CI can use the `prebuilt` Docker target with a binary-only context.
 
 ## Prometheus Configuration
@@ -183,7 +184,7 @@ Add the following to your `prometheus.yml`:
 ```yaml
 scrape_configs:
   - job_name: 'apollo_air1'
-    metrics_path: /metrics
+    metrics_path: /probe
     scrape_interval: 30s
     scrape_timeout: 15s
     static_configs:

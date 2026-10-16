@@ -12,9 +12,12 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var version = "0.0.13"
+var version = "0.2.0"
 
 type exporter struct {
 	httpTimeout time.Duration
@@ -26,7 +29,17 @@ func newExporter(cfg config) *exporter {
 
 func (exporter *exporter) handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /metrics", func(writer http.ResponseWriter, request *http.Request) {
+	exporterRegistry := prometheus.NewRegistry()
+	exporterRegistry.MustRegister(prometheus.NewGoCollector(), prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
+	info := prometheus.NewGauge(prometheus.GaugeOpts{
+		Name:        "apollo_air1_exporter_info",
+		Help:        "Build information for the Apollo Air-1 exporter.",
+		ConstLabels: prometheus.Labels{"version": version},
+	})
+	info.Set(1)
+	exporterRegistry.MustRegister(info)
+	mux.Handle("GET /metrics", promhttp.HandlerFor(exporterRegistry, promhttp.HandlerOpts{}))
+	mux.HandleFunc("GET /probe", func(writer http.ResponseWriter, request *http.Request) {
 		targets := request.URL.Query()["target"]
 		if len(targets) != 1 || targets[0] == "" {
 			http.Error(writer, "exactly one target query parameter is required", http.StatusBadRequest)
@@ -62,7 +75,7 @@ func (exporter *exporter) handler() http.Handler {
 		fmt.Fprint(writer, "OK")
 	})
 	mux.HandleFunc("GET /{$}", func(writer http.ResponseWriter, request *http.Request) {
-		fmt.Fprint(writer, "Apollo Air-1 Prometheus Exporter\n\nEndpoints:\n  /metrics?target=http://device - Query device metrics\n  /health - Health check\n")
+		fmt.Fprint(writer, "Apollo Air-1 Prometheus Exporter\n\nEndpoints:\n  /probe?target=http://device - Query device metrics\n  /metrics - Exporter metrics\n  /health - Health check\n")
 	})
 	return mux
 }

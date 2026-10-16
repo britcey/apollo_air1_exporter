@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-  apollo-air1-exporter:
+  apollo_air1_exporter:
     build: .
-    image: apollo-air1-exporter
-    container_name: apollo-air1-exporter
+    image: apollo_air1_exporter
+    container_name: apollo_air1_exporter
     restart: unless-stopped
     ports:
       - "9926:9926"

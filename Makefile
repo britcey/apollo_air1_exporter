@@ -6,7 +6,7 @@ LDFLAGS = -s -w -X main.version=$(VERSION)
 
 # Build the project
 build:
-	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o dist/apollo-air1-exporter .
+	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o dist/apollo_air1_exporter .
 
 # Run tests
 test:
@@ -30,17 +30,17 @@ clean:
 
 # Static Linux binaries need no cross-linker or C toolchain.
 build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=$(GOARCH) go build -trimpath -ldflags "$(LDFLAGS)" -o dist/linux-$(GOARCH)/apollo-air1-exporter .
+	CGO_ENABLED=0 GOOS=linux GOARCH=$(GOARCH) go build -trimpath -ldflags "$(LDFLAGS)" -o dist/linux-$(GOARCH)/apollo_air1_exporter .
 
 build-musl: build-linux
 
 docker-build: build-linux
-	docker build --target prebuilt -f Dockerfile -t apollo-air1-exporter dist/linux-$(GOARCH)
-	docker run --rm apollo-air1-exporter --help >/dev/null
+	docker build --target prebuilt -f Dockerfile -t apollo_air1_exporter dist/linux-$(GOARCH)
+	docker run --rm apollo_air1_exporter --help >/dev/null
 
 # Build multi-arch Docker image (local)
 docker-buildx:
-	docker buildx build --platform linux/amd64,linux/arm64 -t apollo-air1-exporter .
+	docker buildx build --platform linux/amd64,linux/arm64 -t apollo_air1_exporter .
 
 # Build and push multi-arch Docker image to Docker Hub
 docker-push:
@@ -58,8 +58,8 @@ docker-push:
 	@echo "$$DOCKER_PASSWORD" | docker login -u "$$DOCKER_USERNAME" --password-stdin
 	@echo "Building and pushing multi-arch images..."
 	docker buildx build --platform linux/amd64,linux/arm64 \
-		-t $$DOCKER_USERNAME/apollo-air1-exporter:latest \
-		-t $$DOCKER_USERNAME/apollo-air1-exporter:$$(git describe --tags --always) \
+		-t $$DOCKER_USERNAME/apollo_air1_exporter:latest \
+		-t $$DOCKER_USERNAME/apollo_air1_exporter:$$(git describe --tags --always) \
 		--push .
 	@echo "Successfully pushed to Docker Hub!"
 
@@ -73,8 +73,8 @@ docker-push-ghcr:
 	@echo "$$GITHUB_TOKEN" | docker login ghcr.io -u $$GITHUB_ACTOR --password-stdin
 	@echo "Building and pushing multi-arch images to GHCR..."
 	docker buildx build --platform linux/amd64,linux/arm64 \
-		-t ghcr.io/$$GITHUB_REPOSITORY_OWNER/apollo-air1-exporter:latest \
-		-t ghcr.io/$$GITHUB_REPOSITORY_OWNER/apollo-air1-exporter:$$(git describe --tags --always) \
+		-t ghcr.io/$$GITHUB_REPOSITORY_OWNER/apollo_air1_exporter:latest \
+		-t ghcr.io/$$GITHUB_REPOSITORY_OWNER/apollo_air1_exporter:$$(git describe --tags --always) \
 		--push .
 	@echo "Successfully pushed to GitHub Container Registry!"
 

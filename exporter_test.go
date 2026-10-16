@@ -260,14 +260,14 @@ func TestScrapeTargetValidation(t *testing.T) {
 	for _, target := range []string{"", "apollo.local", "http://", "ftp://apollo", "http://user:pass@apollo", "http://apollo?query=1", "http://apollo#fragment", "http://apollo:bad"} {
 		t.Run(target, func(t *testing.T) {
 			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, httptest.NewRequest("GET", "/metrics?target="+url.QueryEscape(target), nil))
+			handler.ServeHTTP(response, httptest.NewRequest("GET", "/probe?target="+url.QueryEscape(target), nil))
 			if response.Code != http.StatusBadRequest {
 				t.Fatalf("invalid target returned %d: %s", response.Code, response.Body.String())
 			}
 		})
 	}
 	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequest("GET", "/metrics?target=http://one&target=http://two", nil))
+	handler.ServeHTTP(response, httptest.NewRequest("GET", "/probe?target=http://one&target=http://two", nil))
 	if response.Code != http.StatusBadRequest {
 		t.Fatalf("multiple targets returned %d", response.Code)
 	}
@@ -291,7 +291,7 @@ func TestScrapeTimeoutAndCancellation(t *testing.T) {
 			handler := newExporter(config{httpTimeout: timeout}).handler()
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
-			request := httptest.NewRequest("GET", "/metrics?target="+url.QueryEscape(server.URL), nil).WithContext(ctx)
+			request := httptest.NewRequest("GET", "/probe?target="+url.QueryEscape(server.URL), nil).WithContext(ctx)
 			response := httptest.NewRecorder()
 			done := make(chan struct{})
 			go func() {
@@ -336,21 +336,24 @@ func TestScrapeTargetAndFreshness(t *testing.T) {
 	if calls.Load() != 0 {
 		t.Fatal("exporter contacted a device before a scrape")
 	}
-	for _, path := range []string{"/health", "/", "/metrics"} {
+	for _, path := range []string{"/health", "/", "/metrics", "/probe"} {
 		response := httptest.NewRecorder()
 		handler.ServeHTTP(response, httptest.NewRequest("GET", path, nil))
 		want := http.StatusOK
-		if path == "/metrics" {
+		if path == "/probe" {
 			want = http.StatusBadRequest
 		}
 		if response.Code != want || calls.Load() != 0 {
 			t.Fatalf("%s: status=%d, device requests=%d", path, response.Code, calls.Load())
 		}
+		if path == "/metrics" && (!strings.Contains(response.Body.String(), `apollo_air1_exporter_info{version="`+version+`"} 1`) || !strings.Contains(response.Body.String(), "go_goroutines")) {
+			t.Fatalf("/metrics is missing exporter info or Go runtime metrics: %s", response.Body.String())
+		}
 	}
 	for range 2 {
 		before := calls.Load()
 		response := httptest.NewRecorder()
-		handler.ServeHTTP(response, httptest.NewRequest("GET", "/metrics?target="+url.QueryEscape(server.URL)+"&name=Living+Room", nil))
+		handler.ServeHTTP(response, httptest.NewRequest("GET", "/probe?target="+url.QueryEscape(server.URL)+"&name=Living+Room", nil))
 		want := fmt.Sprintf(`apollo_air1_co2_ppm{device="127.0.0.1",host=%q,sensor="CO2"} %d`, server.URL, before+1)
 		if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), want) || calls.Load() != before+int32(len(sensors)) {
 			t.Fatalf("scrape did not query fresh readings: status=%d, calls=%d, body=%s", response.Code, calls.Load(), response.Body.String())
@@ -402,7 +405,7 @@ func TestExporterScrapingAndRecovery(t *testing.T) {
 	defer server.Close()
 	targetDevice := device{server.URL, "127.0.0.1"}
 	handler := newExporter(config{httpTimeout: time.Second}).handler()
-	path := "/metrics?target=" + url.QueryEscape(targetDevice.host)
+	path := "/probe?target=" + url.QueryEscape(targetDevice.host)
 	scrape := func() string {
 		t.Helper()
 		response := httptest.NewRecorder()
@@ -608,7 +611,7 @@ func TestConcurrentTargetScrapes(t *testing.T) {
 			defer workers.Done()
 			target := index % len(servers)
 			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, httptest.NewRequest("GET", "/metrics?target="+url.QueryEscape(servers[target].URL), nil))
+			handler.ServeHTTP(response, httptest.NewRequest("GET", "/probe?target="+url.QueryEscape(servers[target].URL), nil))
 			parser := expfmt.NewTextParser(model.LegacyValidation)
 			families, err := parser.TextToMetricFamilies(strings.NewReader(response.Body.String()))
 			if err != nil || response.Code != http.StatusOK || len(families) != 2 {

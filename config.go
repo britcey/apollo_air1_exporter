@@ -28,7 +28,7 @@ func parseConfig(args []string, getenv func(string) string, output io.Writer) (c
 		}
 		return fallback
 	}
-	flags := flag.NewFlagSet("apollo-air1-exporter", flag.ContinueOnError)
+	flags := flag.NewFlagSet("apollo_air1_exporter", flag.ContinueOnError)
 	flags.SetOutput(output)
 	port := value("APOLLO_EXPORTER_PORT", "9926")
 	flags.StringVar(&port, "port", port, "Metrics port (APOLLO_EXPORTER_PORT)")
@@ -42,7 +42,7 @@ func parseConfig(args []string, getenv func(string) string, output io.Writer) (c
 		return cfg, err
 	}
 	if *showVersion {
-		fmt.Fprintln(output, "apollo-air1-exporter", version)
+		fmt.Fprintln(output, "apollo_air1_exporter", version)
 		return cfg, flag.ErrHelp
 	}
 	if flags.NArg() != 0 {

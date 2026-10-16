@@ -7,7 +7,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath \
-    -ldflags "-s -w ${VERSION:+-X main.version=$VERSION}" -o /out/apollo-air1-exporter .
+    -ldflags "-s -w ${VERSION:+-X main.version=$VERSION}" -o /out/apollo_air1_exporter .
 
 FROM alpine:3.24 AS runtime
 
@@ -34,10 +34,10 @@ ENV APOLLO_LOG_LEVEL=info
 ENV APOLLO_EXPORTER_PORT=9926
 
 # Run the exporter
-ENTRYPOINT ["/usr/local/bin/apollo-air1-exporter"]
+ENTRYPOINT ["/usr/local/bin/apollo_air1_exporter"]
 
 FROM runtime AS prebuilt
-COPY --chmod=755 apollo-air1-exporter /usr/local/bin/apollo-air1-exporter
+COPY --chmod=755 apollo_air1_exporter /usr/local/bin/apollo_air1_exporter
 
 FROM runtime AS final
-COPY --from=build --chmod=755 /out/apollo-air1-exporter /usr/local/bin/apollo-air1-exporter
+COPY --from=build --chmod=755 /out/apollo_air1_exporter /usr/local/bin/apollo_air1_exporter
