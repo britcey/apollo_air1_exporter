@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/alecthomas/kingpin/v2"
+	promversion "github.com/prometheus/common/version"
 	"github.com/prometheus/exporter-toolkit/web"
 	"github.com/prometheus/exporter-toolkit/web/kingpinflag"
 )
@@ -51,7 +52,7 @@ func parseConfig(args []string, getenv func(string) string, output io.Writer) (c
 	bind := app.Flag("bind", "Metrics bind address (APOLLO_EXPORTER_BIND)").Default(bindDefault).String()
 	timeout := app.Flag("http-timeout", "Device collection timeout per scrape in seconds (APOLLO_HTTP_TIMEOUT)").Default(timeoutDefault).String()
 	logLevel := app.Flag("log-level", "Log level: trace, debug, info, warn, error (APOLLO_LOG_LEVEL)").Default(logLevelDefault).Enum("trace", "debug", "info", "warn", "error")
-	app.Version(fmt.Sprintf("apollo_air1_exporter %s", version)).VersionFlag.Short('V')
+	app.Version(promversion.Print("apollo_air1_exporter")).VersionFlag.Short('V')
 	webFlags := kingpinflag.AddFlags(app, net.JoinHostPort(bindDefault, portDefault))
 	app.GetFlag("web.config.file").Default(value("APOLLO_WEB_CONFIG_FILE", ""))
 	var listenAddressSet bool

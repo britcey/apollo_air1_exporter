@@ -1,12 +1,34 @@
-.PHONY: build build-linux build-musl test lint fmt fmt-check clean docker-build docker-buildx docker-push docker-push-ghcr run run-debug check dev-setup gh-secrets release release-patch release-minor release-major help
+.PHONY: build build-linux build-musl crossbuild tarball promu test lint fmt fmt-check clean docker-build docker-buildx docker-push docker-push-ghcr run run-debug check dev-setup gh-secrets release release-patch release-minor release-major help
 
-VERSION ?= $(shell sed -n 's/^var version = "\(.*\)"/\1/p' main.go)
+VERSION ?= $(shell sed -n '1p' VERSION)
 GOARCH ?= $(shell go env GOARCH)
-LDFLAGS = -s -w -X main.version=$(VERSION)
+GO ?= go
+FIRST_GOPATH := $(firstword $(subst :, ,$(shell $(GO) env GOPATH)))
+PROMU ?= $(FIRST_GOPATH)/bin/promu
+PROMU_VERSION ?= 0.20.0
+GNU_COREUTILS_BIN := $(shell brew --prefix coreutils 2>/dev/null)/libexec/gnubin
 
 # Build the project
-build:
-	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o dist/apollo_air1_exporter .
+build: promu
+	$(PROMU) build
+
+crossbuild: promu
+	$(PROMU) crossbuild
+
+tarball: build promu
+	@if [ "$$(uname)" = Darwin ] && [ ! -x "$(GNU_COREUTILS_BIN)/cp" ]; then \
+		echo "Promu tarball requires GNU coreutils on macOS (brew install coreutils)" >&2; \
+		exit 1; \
+	elif [ -x "$(GNU_COREUTILS_BIN)/cp" ]; then \
+		PATH="$(GNU_COREUTILS_BIN):$$PATH" $(PROMU) tarball --prefix dist dist; \
+	else \
+		$(PROMU) tarball --prefix dist dist; \
+	fi
+
+promu: $(PROMU)
+
+$(PROMU):
+	GOBIN="$(FIRST_GOPATH)/bin" $(GO) install github.com/prometheus/promu@v$(PROMU_VERSION)
 
 # Run tests
 test:
@@ -26,11 +48,11 @@ fmt-check:
 # Clean build artifacts
 clean:
 	go clean
-	rm -rf dist/
+	rm -rf dist/ .build/ .tarballs/
 
 # Static Linux binaries need no cross-linker or C toolchain.
-build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=$(GOARCH) go build -trimpath -ldflags "$(LDFLAGS)" -o dist/linux-$(GOARCH)/apollo_air1_exporter .
+build-linux: promu
+	GOOS=linux GOARCH=$(GOARCH) $(PROMU) build --prefix dist/linux-$(GOARCH)
 
 build-musl: build-linux
 
@@ -120,7 +142,9 @@ gh-secrets:
 # Show available commands
 help:
 	@echo "Available commands:"
-	@echo "  make build          - Build the project"
+	@echo "  make build          - Build the project with promu"
+	@echo "  make crossbuild     - Cross-build configured platforms with promu"
+	@echo "  make tarball        - Build a promu release tarball"
 	@echo "  make test           - Run tests"
 	@echo "  make lint           - Run linting"
 	@echo "  make fmt            - Format code"

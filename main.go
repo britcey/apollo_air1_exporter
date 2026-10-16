@@ -14,10 +14,9 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	promversion "github.com/prometheus/common/version"
 	"github.com/prometheus/exporter-toolkit/web"
 )
-
-var version = "0.4.0"
 
 type exporter struct {
 	httpTimeout time.Duration
@@ -32,9 +31,18 @@ func (exporter *exporter) handler() http.Handler {
 	exporterRegistry := prometheus.NewRegistry()
 	exporterRegistry.MustRegister(prometheus.NewGoCollector(), prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
 	info := prometheus.NewGauge(prometheus.GaugeOpts{
-		Name:        "apollo_air1_exporter_info",
-		Help:        "Build information for the Apollo Air-1 exporter.",
-		ConstLabels: prometheus.Labels{"version": version},
+		Name: "apollo_air1_exporter_info",
+		Help: "Build information for the Apollo Air-1 exporter.",
+		ConstLabels: prometheus.Labels{
+			"version":    promversion.Version,
+			"revision":   promversion.Revision,
+			"branch":     promversion.Branch,
+			"build_user": promversion.BuildUser,
+			"build_date": promversion.BuildDate,
+			"go_version": promversion.GoVersion,
+			"goos":       promversion.GoOS,
+			"goarch":     promversion.GoArch,
+		},
 	})
 	info.Set(1)
 	exporterRegistry.MustRegister(info)
@@ -118,7 +126,8 @@ func run() error {
 			slog.Error("HTTP shutdown failed", "error", err)
 		}
 	}()
-	slog.Info("Starting Apollo Air-1 Prometheus Exporter", "version", version, "addresses", cfg.webListenAddresses)
+	logArgs := append(promversion.Slog(), "addresses", cfg.webListenAddresses)
+	slog.Info("Starting Apollo Air-1 Prometheus Exporter", logArgs...)
 	err = web.ListenAndServe(server, webFlags, slog.Default())
 	stop()
 	<-shutdownDone

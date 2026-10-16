@@ -178,9 +178,14 @@ make build
 ```
 
 `make check` runs formatting checks, `go vet`, and race-enabled tests.
-`make build-linux GOARCH=amd64` (or `arm64`) builds a static Linux binary without
-a cross-compiler. `docker build -t apollo_air1_exporter .` and Docker Compose build
-from source; CI can use the `prebuilt` Docker target with a binary-only context.
+`make build` uses promu and creates `dist/apollo_air1_exporter`; promu is installed
+at a pinned version if needed. `make build-linux GOARCH=amd64` (or `arm64`) uses
+promu for a static Linux binary. `make crossbuild` uses promu's builder containers
+for the configured Linux architectures, and `make tarball` packages a release
+archive. `docker build -t apollo_air1_exporter .` and Docker Compose continue to
+build directly from source.
+On macOS, install GNU coreutils (`brew install coreutils`) before running
+`make tarball`.
 
 ## Prometheus Configuration
 

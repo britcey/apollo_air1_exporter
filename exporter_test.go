@@ -20,6 +20,7 @@ import (
 
 	"github.com/prometheus/common/expfmt"
 	"github.com/prometheus/common/model"
+	promversion "github.com/prometheus/common/version"
 )
 
 func TestConfig(t *testing.T) {
@@ -349,8 +350,9 @@ func TestScrapeTargetAndFreshness(t *testing.T) {
 		if response.Code != want || calls.Load() != 0 {
 			t.Fatalf("%s: status=%d, device requests=%d", path, response.Code, calls.Load())
 		}
-		if path == "/metrics" && (!strings.Contains(response.Body.String(), `apollo_air1_exporter_info{version="`+version+`"} 1`) || !strings.Contains(response.Body.String(), "go_goroutines")) {
-			t.Fatalf("/metrics is missing exporter info or Go runtime metrics: %s", response.Body.String())
+		body := response.Body.String()
+		if path == "/metrics" && (!strings.Contains(body, "apollo_air1_exporter_info{") || !strings.Contains(body, `version="`+promversion.Version+`"`) || !strings.Contains(body, `revision="`+promversion.Revision+`"`) || !strings.Contains(body, "go_goroutines")) {
+			t.Fatalf("/metrics is missing exporter build info or Go runtime metrics: %s", body)
 		}
 	}
 	for range 2 {

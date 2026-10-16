@@ -5,9 +5,13 @@ ARG VERSION
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
+COPY VERSION ./VERSION
 COPY *.go ./
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath \
-    -ldflags "-s -w ${VERSION:+-X main.version=$VERSION}" -o /out/apollo_air1_exporter .
+RUN VERSION="${VERSION:-$(cat VERSION)}" \
+    BUILD_DATE="$(date -u +%Y%m%d-%H:%M:%S)" && \
+    CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath \
+    -ldflags "-s -w -X github.com/prometheus/common/version.Version=$VERSION -X github.com/prometheus/common/version.Revision=unknown -X github.com/prometheus/common/version.Branch=unknown -X github.com/prometheus/common/version.BuildUser=unknown@unknown -X github.com/prometheus/common/version.BuildDate=$BUILD_DATE" \
+    -o /out/apollo_air1_exporter .
 
 FROM alpine:3.24 AS runtime
 

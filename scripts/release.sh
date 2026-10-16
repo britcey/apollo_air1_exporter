@@ -32,9 +32,8 @@ if ! git diff-index --quiet HEAD --; then
     exit 1
 fi
 
-# Update the default binary version.
-sed -i.bak "s/^var version = \".*\"/var version = \"$VERSION\"/" main.go
-rm main.go.bak
+# Update the release baseline used by Makefile release helpers.
+printf '%s\n' "$VERSION" > VERSION
 
 echo "Running checks..."
 make check
@@ -44,12 +43,15 @@ echo "Please update CHANGELOG.md for version $VERSION"
 echo "Press Enter when done..."
 read
 
-# Commit version bump
-git add main.go CHANGELOG.md
-git commit -m "chore: bump version to $VERSION"
+# Commit release metadata
+git add VERSION CHANGELOG.md
+git commit -m "chore: prepare release $TAG"
 
 # Create and push tag
 git tag -a "$TAG" -m "Release $TAG"
+
+echo "Building release tarball..."
+make tarball
 
 echo ""
 echo "Release $TAG prepared!"
