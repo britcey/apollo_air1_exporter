@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  apollo-air1-exporter:
+    build: .
+    image: apollo-air1-exporter
+    container_name: apollo-air1-exporter
+    restart: unless-stopped
+    ports:
+      - "9926:9926"
+    environment:
+      - APOLLO_LOG_LEVEL=info
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    external: true

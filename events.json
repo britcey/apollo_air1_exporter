@@ -1,0 +1,136 @@
+
+retry: 30000
+id: 3982330
+event: ping
+data: {"title":"Apollo AIR-1 4f9640","comment":"Apollo AIR-1","ota":true,"log":true,"lang":"en","uptime":3982}
+
+event: state
+data: {"id":"binary_sensor/Online","domain":"binary_sensor","name":"Online","icon":"","entity_category":2,"value":true,"state":"ON"}
+
+event: state
+data: {"id":"light/RGB Light","domain":"light","name":"RGB Light","icon":"","entity_category":0,"value":"OFF","effect":"None","effect_index":0,"effect_count":2,"color_mode":"rgb","state":"OFF","brightness":255,"color":{"r":255,"g":255,"b":255},"effects":["None","Slow Pulse","Fast Pulse"]}
+
+event: state
+data: {"id":"sensor/ESP Temperature","domain":"sensor","name":"ESP Temperature","icon":"","entity_category":2,"value":47.4,"state":"47.4 °C","uom":"°C"}
+
+event: state
+data: {"id":"sensor/Uptime","domain":"sensor","name":"Uptime","icon":"mdi:timer-outline","entity_category":2,"value":3964.365,"state":"3964 s","uom":"s"}
+
+event: state
+data: {"id":"sensor/RSSI","domain":"sensor","name":"RSSI","icon":"","entity_category":2,"value":-45,"state":"-45 dBm","uom":"dBm"}
+
+event: state
+data: {"id":"sensor/CO2","domain":"sensor","name":"CO2","icon":"mdi:molecule-co2","entity_category":0,"value":784,"state":"784 ppm","uom":"ppm"}
+
+event: state
+data: {"id":"sensor/DPS310 Pressure","domain":"sensor","name":"DPS310 Pressure","icon":"mdi:gauge","entity_category":0,"value":1007.253,"state":"1007.3 hPa","uom":"hPa"}
+
+event: state
+data: {"id":"sensor/PM <1µm Weight concentration","domain":"sensor","name":"PM <1µm Weight concentration","icon":"mdi:chemical-weapon","entity_category":0,"value":1.2,"state":"1.2 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/PM <2.5µm Weight concentration","domain":"sensor","name":"PM <2.5µm Weight concentration","icon":"mdi:chemical-weapon","entity_category":0,"value":1.5,"state":"1.5 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/PM <4µm Weight concentration","domain":"sensor","name":"PM <4µm Weight concentration","icon":"mdi:chemical-weapon","entity_category":0,"value":1.6,"state":"1.6 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/PM <10µm Weight concentration","domain":"sensor","name":"PM <10µm Weight concentration","icon":"mdi:chemical-weapon","entity_category":0,"value":1.7,"state":"1.7 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/SEN55 VOC","domain":"sensor","name":"SEN55 VOC","icon":"mdi:radiator","entity_category":0,"value":128,"state":"128"}
+
+retry: 30000
+id: 3982660
+event: ping
+data: {"uptime":3982}
+
+event: state
+data: {"id":"sensor/SEN55 NOX","domain":"sensor","name":"SEN55 NOX","icon":"mdi:radiator","entity_category":0,"value":1,"state":"1"}
+
+event: state
+data: {"id":"sensor/SEN55 Temperature","domain":"sensor","name":"SEN55 Temperature","icon":"mdi:thermometer","entity_category":0,"value":21.97,"state":"22.0 °C","uom":"°C"}
+
+event: state
+data: {"id":"sensor/SEN55 Humidity","domain":"sensor","name":"SEN55 Humidity","icon":"mdi:water-percent","entity_category":0,"value":43.24,"state":"43.2 %","uom":"%"}
+
+event: state
+data: {"id":"sensor/PM 0.3 To 1 µm","domain":"sensor","name":"PM 0.3 To 1 µm","icon":"mdi:air-filter","entity_category":0,"is_disabled_by_default":true,"value":1.2,"state":"1.2 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/PM 1 To 2.5 µm","domain":"sensor","name":"PM 1 To 2.5 µm","icon":"mdi:air-filter","entity_category":0,"is_disabled_by_default":true,"value":0.3,"state":"0.3 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/PM 2.5 To 4 µm","domain":"sensor","name":"PM 2.5 To 4 µm","icon":"mdi:air-filter","entity_category":0,"is_disabled_by_default":true,"value":0.1,"state":"0.1 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/PM 4 To 10 µm","domain":"sensor","name":"PM 4 To 10 µm","icon":"mdi:air-filter","entity_category":0,"is_disabled_by_default":true,"value":0.1,"state":"0.1 µg/m³","uom":"µg/m³"}
+
+event: state
+data: {"id":"sensor/NowCast AQI","domain":"sensor","name":"NowCast AQI","icon":"","entity_category":0,"value":8,"state":"8"}
+
+event: state
+data: {"id":"sensor/Carbon Monoxide","domain":"sensor","name":"Carbon Monoxide","icon":"","entity_category":0,"value":4.33392,"state":"4.33 ppm","uom":"ppm"}
+
+event: state
+data: {"id":"sensor/Methane","domain":"sensor","name":"Methane","icon":"","entity_category":0,"value":0,"state":"0.00 ppm","uom":"ppm"}
+
+event: state
+data: {"id":"sensor/Ethanol","domain":"sensor","name":"Ethanol","icon":"","entity_category":0,"value":1.582891,"state":"1.58 ppm","uom":"ppm"}
+
+event: state
+data: {"id":"sensor/Hydrogen","domain":"sensor","name":"Hydrogen","icon":"","entity_category":0,"value":0,"state":"0.00 ppm","uom":"ppm"}
+
+event: state
+data: {"id":"sensor/Ammonia","domain":"sensor","name":"Ammonia","icon":"","entity_category":0,"value":1.015073,"state":"1.02 ppm","uom":"ppm"}
+
+event: state
+data: {"id":"sensor/Nitrogen Dioxide","domain":"sensor","name":"Nitrogen Dioxide","icon":"","entity_category":0,"value":0.163605,"state":"0.16 ppm","uom":"ppm"}
+
+event: state
+data: {"id":"switch/Prevent Sleep","domain":"switch","name":"Prevent Sleep","icon":"mdi:sleep","entity_category":1,"value":true,"state":"ON","assumed_state":false}
+
+event: state
+data: {"id":"switch/CO2 Auto Calibration","domain":"switch","name":"CO2 Auto Calibration","icon":"mdi:molecule-co2","entity_category":1,"value":true,"state":"ON","assumed_state":false}
+
+event: state
+data: {"id":"switch/Bluetooth Proxy","domain":"switch","name":"Bluetooth Proxy","icon":"mdi:bluetooth","entity_category":1,"value":false,"state":"OFF","assumed_state":false}
+
+event: state
+data: {"id":"button/ESP Reboot","domain":"button","name":"ESP Reboot","icon":"mdi:power-cycle","entity_category":1}
+
+event: state
+data: {"id":"button/Factory Reset ESP","domain":"button","name":"Factory Reset ESP","icon":"mdi:restart-alert","entity_category":1,"is_disabled_by_default":true}
+
+event: state
+data: {"id":"button/Calibrate SCD40 To 420ppm","domain":"button","name":"Calibrate SCD40 To 420ppm","icon":"","entity_category":0}
+
+event: state
+data: {"id":"button/Clean SEN55","domain":"button","name":"Clean SEN55","icon":"","entity_category":0}
+
+event: state
+data: {"id":"button/Firmware Update","domain":"button","name":"Firmware Update","icon":"mdi:cloud-download","entity_category":1}
+
+event: state
+data: {"id":"text_sensor/VOC Quality","domain":"text_sensor","name":"VOC Quality","icon":"mdi:air-filter","entity_category":0,"value":"Normal","state":"Normal"}
+
+event: state
+data: {"id":"text_sensor/IP Address","domain":"text_sensor","name":"IP Address","icon":"","entity_category":2,"value":"192.168.1.107","state":"192.168.1.107"}
+
+event: state
+data: {"id":"text_sensor/ESPHome Version","domain":"text_sensor","name":"ESPHome Version","icon":"mdi:new-box","entity_category":2,"value":"2026.9.1 (config hash 0x853bc3cc)","state":"2026.9.1 (config hash 0x853bc3cc)"}
+
+event: state
+data: {"id":"text_sensor/Apollo Firmware Version","domain":"text_sensor","name":"Apollo Firmware Version","icon":"","entity_category":2,"value":"26.10.8.1","state":"26.10.8.1"}
+
+event: state
+data: {"id":"number/Air Quality LED Brightness","domain":"number","name":"Air Quality LED Brightness","icon":"mdi:brightness-6","entity_category":1,"value":"100","state":"100 %","min_value":"5","max_value":"100","step":"1","mode":2,"uom":"%"}
+
+event: state
+data: {"id":"number/SEN55 Temperature Offset","domain":"number","name":"SEN55 Temperature Offset","icon":"","entity_category":1,"value":"6.0","state":"6.0 °C","min_value":"-70.0","max_value":"70.0","step":"0.1","mode":1,"uom":"°C"}
+
+event: state
+data: {"id":"number/SEN55 Humidity Offset","domain":"number","name":"SEN55 Humidity Offset","icon":"","entity_category":1,"value":"0.0","state":"0.0 %","min_value":"-70.0","max_value":"70.0","step":"0.1","mode":1,"uom":"%"}
+
+event: state
+data: {"id":"number/DPS310 Pressure Offset","domain":"number","name":"DPS310 Pressure Offset","icon":"","entity_category":1,"is_disabled_by_default":true,"value":"0.0","state":"0.0 hPa","min_value":"-100.0","max_value":"100.0","
